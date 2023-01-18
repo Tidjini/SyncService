@@ -8,7 +8,7 @@ namespace SyncServiceTest
     public class ProductModelTest
     {
         [TestMethod]
-        public void CanInitateProduct()
+        public void CanInitiateProduct()
         {
 
             Product product = new Product();

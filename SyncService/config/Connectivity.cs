@@ -11,21 +11,21 @@ namespace SyncService.config
     {
         public static bool IsAvailable = GetIsNetworkAvailable();
 
-        void NetworkAvailablityChanged(object sender, NetworkAvailabilityEventArgs e)
+        static void NetworkAvailablityChanged(object sender, NetworkAvailabilityEventArgs e)
         {
-
+            Console.WriteLine("internet is available : {0}", e.IsAvailable);
+            IsAvailable = e.IsAvailable;
         }
 
-        public void Build()
+        public static void Build()
         {
             NetworkChange.NetworkAvailabilityChanged
                 += new NetworkAvailabilityChangedEventHandler(NetworkAvailablityChanged);
         }
 
-
-
-
         public abstract void OnNetworkAvailable();
         public abstract void OnNotAvailbe();
     }
+
+    
 }

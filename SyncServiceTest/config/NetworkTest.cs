@@ -16,7 +16,17 @@ namespace SyncServiceTest
         public void IsAvailableTest()
         {
             var connectivity = Connectivity.IsAvailable;
-            Assert.AreEqual(false, connectivity);
+            Assert.AreEqual(true, connectivity);
+        }
+
+        [TestMethod]
+        public void ConnectvityChanged()
+        {
+            Connectivity.Build();
+            var connectivity = Connectivity.IsAvailable;
+
+            Assert.AreEqual(true, connectivity);
+
         }
 
 

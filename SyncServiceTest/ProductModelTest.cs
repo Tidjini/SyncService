@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SyncService.models;
 
 namespace SyncServiceTest
 {
@@ -12,6 +12,9 @@ namespace SyncServiceTest
 
             Product product = new Product();
         }
+
+
+        
     }
 }
 

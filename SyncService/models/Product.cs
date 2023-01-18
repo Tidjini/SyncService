@@ -11,7 +11,6 @@ namespace SyncService.models
 
         public string Reference { get; set; }
         public string Name { get; set; }
-
         public decimal Montant { get; set; }
         public decimal Qte { get; set; }
 

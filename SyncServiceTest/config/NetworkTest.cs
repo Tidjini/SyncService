@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SyncService.config;
 
 namespace SyncServiceTest
 {
@@ -12,11 +13,10 @@ namespace SyncServiceTest
     public class NetworkTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void IsAvailableTest()
         {
-            //
-            // TODO: ajoutez ici la logique du test
-            //
+            var connectivity = Connectivity.IsAvailable;
+            Assert.AreEqual(false, connectivity);
         }
 
 

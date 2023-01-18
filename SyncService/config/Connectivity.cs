@@ -21,11 +21,18 @@ namespace SyncService.config
         {
             NetworkChange.NetworkAvailabilityChanged
                 += new NetworkAvailabilityChangedEventHandler(NetworkAvailablityChanged);
+
+            NetworkChange.NetworkAvailabilityChanged += OnNetworkAvailabilityChanged;
+
+
         }
+        static void OnNetworkAvailabilityChanged(
+               object sender, NetworkAvailabilityEventArgs networkAvailability) =>
+               Console.WriteLine($"Network is available: {networkAvailability.IsAvailable}");
 
         public abstract void OnNetworkAvailable();
         public abstract void OnNotAvailbe();
     }
 
-    
+
 }

@@ -9,7 +9,7 @@ namespace SyncServiceTest
         [TestMethod]
         public void CanInitateProduct()
         {
-
+            //check this one
             Product product = new Product();
         }
     }

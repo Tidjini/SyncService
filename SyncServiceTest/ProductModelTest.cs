@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SyncService.models;
 
 namespace SyncServiceTest
@@ -14,7 +15,17 @@ namespace SyncServiceTest
         }
 
 
-        
+        [TestMethod]
+        public void ProductTypeTest()
+        {
+            Product product = new Product();
+
+            Assert.AreEqual(typeof(string), product.Reference.GetType());
+            Assert.AreEqual(typeof(string), product.Name.GetType());
+            Assert.AreEqual(typeof(decimal), product.Montant.GetType());
+            Assert.AreEqual(typeof(decimal), product.Qte.GetType());
+
+        }
     }
 }
 

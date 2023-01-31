@@ -1,7 +1,7 @@
 ﻿using System;
-using Newtonsoft.Json.Linq;
-using SocketIOSharp.Server;
-using SocketIOSharp.Server.Client;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 namespace SyncServiceTest.server
 {
@@ -24,11 +24,12 @@ namespace SyncServiceTest.server
     }
     internal class DummyServer
     {
-        private const ushort DEFAULT_PROT = 9001;
-        
-        private readonly SocketIOServer _server;
-        public ushort Port { get; set; }
-        public bool Started
+        private const int DEFAULT_PROT = 9089;
+        private const int BACKLOG = 10;
+
+        private readonly Socket _server;
+        public int Port { get; set; }
+        public bool IsRunning
         {
             get; set;
         }
@@ -36,16 +37,18 @@ namespace SyncServiceTest.server
         public int Connections { get; set; }
 
 
-        public DummyServer(ushort port = DEFAULT_PROT)
-        {
+        public DummyServer(int port = DEFAULT_PROT)
+        {            
 
-            Logger.Log($"============= DUMMY SERVER INTIALISATION : {port} =============");
+            _server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             Port = port;
-            _server = new SocketIOServer(new SocketIOServerOption(port));
+            Logger.Log($"============= DUMMY SERVER INTIALISATION : {port} =============");
 
         }
 
-        public DummyServer(SocketIOServer server, ushort port = DEFAULT_PROT)
+
+
+        public DummyServer(Socket server, ushort port = DEFAULT_PROT)
         {
 
             Logger.Log($"============= DUMMY SERVER : {port} =============");
@@ -53,22 +56,38 @@ namespace SyncServiceTest.server
             _server = server;
         }
 
-        public void Start()
+        public void Start(int backlog = BACKLOG)
         {
-            Logger.Log("Started");
-            _server.Start();
-            Started = true;
-            Logger.Log("Start listening to incomming connections...");
-            OnConnection();
+
+            try
+            {
+
+                IPHostEntry host = Dns.GetHostEntry("localhost");
+                IPAddress ipAddress = host.AddressList[0];
+                IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Port);
+                _server.Bind(localEndPoint);
+                _server.Listen(backlog);
+                Logger.Log("Started with success");
+                IsRunning = true;       
+                
+                OnConnection();
+
+            }
+            catch(Exception)
+            {
+                Logger.Log("Start Exception");
+                IsRunning = false;
+            }
+
         }
 
         public void Stop()
         {
-            Logger.Log("Stopped");
-            _server.Dispose();
-            _server.Stop();
+            Logger.Log("Shutdown and Close");
+            _server.Shutdown(SocketShutdown.Both);
+            _server.Close();
             Connections = 0;
-            Started = false;
+            IsRunning = false;
         }
 
 
@@ -77,33 +96,24 @@ namespace SyncServiceTest.server
 
         public void OnConnection()
         {
-            _server.OnConnection((SocketIOSocket socket) =>
+
+
+            Socket handler = _server.Accept();
+
+            // Incoming data from the client.
+            string data = null;
+            byte[] bytes = null;
+
+            while (true)
             {
-
-                Connections += 1;
-                Logger.Log("Client Connected...");
-                socket.On(ServerEvent.INPUT, (JToken[] Data) =>
+                bytes = new byte[1024];
+                int bytesRec = handler.Receive(bytes);
+                data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+                if (data.IndexOf("<EOF>") > -1)
                 {
-
-                    foreach (JToken token in Data)
-                    {
-
-                    }
-
-                    Console.WriteLine();
-
-                    socket.Emit("echo", Data);
-                });
-
-
-                socket.On(ServerEvent.DISCONNECT, () =>
-                {
-                    Logger.Log("Client Disconnected");
-
-                });
-
-
-            });
+                    break;
+                }
+            }
         }
 
 

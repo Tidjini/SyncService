@@ -14,6 +14,7 @@ namespace SyncServiceTest
         public MainTest()
         {
             // - how to TDD this
+            // - create server
             // - connect to server (SOCKET IO)
             // - listen to request
             // - accept request

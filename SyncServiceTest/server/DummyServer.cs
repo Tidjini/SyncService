@@ -25,9 +25,15 @@ namespace SyncServiceTest.server
     internal class DummyServer
     {
         private const ushort DEFAULT_PROT = 9001;
+        
         private readonly SocketIOServer _server;
         public ushort Port { get; set; }
+        public bool Started
+        {
+            get; set;
+        }
 
+        public int Connections { get; set; }
 
 
         public DummyServer(ushort port = DEFAULT_PROT)
@@ -51,6 +57,7 @@ namespace SyncServiceTest.server
         {
             Logger.Log("Started");
             _server.Start();
+            Started = true;
             Logger.Log("Start listening to incomming connections...");
             OnConnection();
         }
@@ -60,6 +67,8 @@ namespace SyncServiceTest.server
             Logger.Log("Stopped");
             _server.Dispose();
             _server.Stop();
+            Connections = 0;
+            Started = false;
         }
 
 
@@ -70,6 +79,8 @@ namespace SyncServiceTest.server
         {
             _server.OnConnection((SocketIOSocket socket) =>
             {
+
+                Connections += 1;
                 Logger.Log("Client Connected...");
                 socket.On(ServerEvent.INPUT, (JToken[] Data) =>
                 {

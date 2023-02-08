@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 
 namespace SyncServiceTest.server
 {
@@ -11,10 +9,10 @@ namespace SyncServiceTest.server
     [TestClass]
     public class ServerTest
     {
-        private readonly DummyServer server; 
+        //private readonly DummyServer server; 
         public ServerTest()
         {
-            server = new DummyServer();
+            
 
         }
 
@@ -22,8 +20,25 @@ namespace SyncServiceTest.server
         [TestMethod]
         public void TestRunning()
         {
-            server.Start();
-            Assert.AreEqual(true, server.IsRunning);
+            SyncService.communication.Service.OnConnect();
+
+            SyncService.communication.Service.socket.On("hi", response =>
+            {
+                // You can print the returned data first to decide what to do next.
+                // output: ["hi client"]
+                string text = response.GetValue<string>();
+
+                Assert.AreEqual(text, "hi there");
+
+
+                // The socket.io server code looks like this:
+                // socket.emit('hi', 'hi client');
+            });
+
+            
         }
+
+
+        
     }
 }

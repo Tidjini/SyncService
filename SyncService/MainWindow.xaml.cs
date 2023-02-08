@@ -27,7 +27,9 @@ namespace SyncService
             InitializeComponent();
             Console.WriteLine("Enter Main Window");
             NetworkChange.NetworkAvailabilityChanged += OnNetworkAvailabilityChanged;
-            
+            communication.Service.OnConnect();
+
+
         }
         void OnNetworkAvailabilityChanged(
               object sender, NetworkAvailabilityEventArgs networkAvailability) =>

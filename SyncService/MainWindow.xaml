@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Button Click="OnClickRequest" Margin="0,0,531,357" >send request</Button>
+        <Button Click="OnClickResponse" Margin="302,10,256,349">send response</Button>
     </Grid>
 </Window>

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Text;
 using System.Windows;
-using H.Socket.IO;
-using Quobject.SocketIoClientDotNet.Client;
-
+using SocketIOClient;
+using SyncService.models;
 
 namespace SyncService
 {
@@ -17,9 +19,7 @@ namespace SyncService
             InitializeComponent();
             Console.WriteLine("Enter Main Window");
             NetworkChange.NetworkAvailabilityChanged += OnNetworkAvailabilityChanged;
-            //communication.Service.OnConnect();
             test();
-            //ConnectToChatNowShTest().Start();
 
         }
         void OnNetworkAvailabilityChanged(
@@ -27,92 +27,73 @@ namespace SyncService
               Console.WriteLine($"Network is available: {networkAvailability.IsAvailable}");
 
 
+        SocketIO client;
 
-
-        public void test()
+        public async void test()
         {
             Console.WriteLine($"-----------------SOCKET-------------------");
-            SocketIoClient socket = new SocketIoClient();
+
            
-            socket.On(Socket.EVENT_CONNECT, () =>
+            try
             {
-                Console.WriteLine($"Network is available: True");
-                socket.Emit("hi");
-            });
 
-            socket.On("hi", (data) =>
+
+                client = new SocketIO("http://localhost:19019/");
+                //SocketIoClient socket = new SocketIoClient();
+                Console.WriteLine($"-----------------INIT-------------------");
+
+                client.OnConnected += async (sender, e) =>
+                {
+                    //Console.WriteLine($"-----------------ON CONNECTED-------------------");
+
+                    //// Emit a string
+                    //await client.EmitAsync("hi", "socket.io");
+                    //Console.WriteLine($"-----------------client.EmitAsync-------------------");
+
+                    //await ((SocketIO)sender).EmitAsync("hi", "socket.io");
+                    //Console.WriteLine($"-----------------sender.EmitAsync-------------------");
+
+
+                    // Emit a string and an object
+                  
+                };
+                await client.ConnectAsync();
+
+
+
+
+            }
+            catch(Exception e)
             {
-                Console.WriteLine(data);
-                //socket.Disconnect();
-            });
-            Console.WriteLine($"-----------------END SOCKET-------------------");
+                Console.WriteLine($"-----------------END SOCKET-------------------" + e.Message);
+            }
+            
         }
-        //public async Task ConnectToChatNowShTest()
-        //{
-        //    SocketIoClient client = new SocketIoClient();
 
-        //    client.Connected += (sender, args) => Console.WriteLine($"Connected: {args.Namespace}");
-        //    client.Disconnected += (sender, args) => Console.WriteLine($"Disconnected. Reason: {args.Reason}, Status: {args.Status:G}");
-        //    client.EventReceived += (sender, args) => Console.WriteLine($"EventReceived: Namespace: {args.Namespace}, Value: {args.Value}, IsHandled: {args.IsHandled}");
-        //    client.HandledEventReceived += (sender, args) => Console.WriteLine($"HandledEventReceived: Namespace: {args.Namespace}, Value: {args.Value}");
-        //    client.UnhandledEventReceived += (sender, args) => Console.WriteLine($"UnhandledEventReceived: Namespace: {args.Namespace}, Value: {args.Value}");
-        //    client.ErrorReceived += (sender, args) => Console.WriteLine($"ErrorReceived: Namespace: {args.Namespace}, Value: {args.Value}");
-        //    client.ExceptionOccurred += (sender, args) => Console.WriteLine($"ExceptionOccurred: {args}");
 
-        //    client.On("login", () =>
-        //    {
-        //        Console.WriteLine("You are logged in.");
-        //    });
-        //    client.On("login", json =>
-        //    {
-        //        Console.WriteLine($"You are logged in. Json: \"{json}\"");
-        //    });
-        //    client.On<ChatMessage>("login", message =>
-        //    {
-        //        Console.WriteLine($"You are logged in. Total number of users: {message.NumUsers}");
-        //    });
-        //    client.On<ChatMessage>("user joined", message =>
-        //    {
-        //        Console.WriteLine($"User joined: {message.Username}. Total number of users: {message.NumUsers}");
-        //    });
-        //    client.On<ChatMessage>("user left", message =>
-        //    {
-        //        Console.WriteLine($"User left: {message.Username}. Total number of users: {message.NumUsers}");
-        //    });
-        //    client.On<ChatMessage>("typing", message =>
-        //    {
-        //        Console.WriteLine($"User typing: {message.Username}");
-        //    });
-        //    client.On<ChatMessage>("stop typing", message =>
-        //    {
-        //        Console.WriteLine($"User stop typing: {message.Username}");
-        //    });
-        //    client.On<ChatMessage>("new message", message =>
-        //    {
-        //        Console.WriteLine($"New message from user \"{message.Username}\": {message.Message}");
-        //    });
+      
 
-        //    await client.ConnectAsync(new Uri("ws://localhost:19019/"));
+        private async void OnClickRequest(object sender, RoutedEventArgs e)
+        {
+            if(client != null)
+            {
+                Console.WriteLine("Button_Click : {0}", "send sample");
+                await client.EmitAsync("request", new Product());
 
-        //    await client.Emit("add user", "C# H.Socket.IO Test User");
+            }
 
-        //    await Task.Delay(TimeSpan.FromMilliseconds(200));
+        }
 
-        //    await client.Emit("typing");
+        private async void OnClickResponse(object sender, RoutedEventArgs e)
+        {
+            if (client != null)
+            {
+                Console.WriteLine("Button_Click : {0}", "send sample");
+                await client.EmitAsync("response", new Product());
 
-        //    await Task.Delay(TimeSpan.FromMilliseconds(200));
+            }
 
-        //    await client.Emit("new message", "hello");
-
-        //    await Task.Delay(TimeSpan.FromMilliseconds(200));
-
-        //    await client.Emit("stop typing");
-
-        //    await Task.Delay(TimeSpan.FromSeconds(2));
-
-        //    await client.DisconnectAsync();
-        //}
-        //}
+        }
     }
 
 }
